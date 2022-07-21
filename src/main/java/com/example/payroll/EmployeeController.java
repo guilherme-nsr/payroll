@@ -1,5 +1,8 @@
 package com.example.payroll;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -8,6 +11,10 @@ class EmployeeController {
 	
 	EmployeeController(EmployeeRepository repository) {
 		this.repository = repository;
-		System.out.println(this.repository);
+	}
+	
+	@GetMapping("/employees")
+	List<Employee> all() {
+		return repository.findAll();
 	}
 }
