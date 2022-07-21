@@ -26,7 +26,7 @@ class EmployeeController {
 		return repository.save(employee);
 	}
 	
-	@GetMapping("/employee/{id}")
+	@GetMapping("/employees/{id}")
 	Employee one(@PathVariable Long id) {
 		return repository.findById(id)
 				.orElseThrow(() -> new EmployeeNotFoundException(id));
