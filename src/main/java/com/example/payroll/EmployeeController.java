@@ -1,7 +1,9 @@
 package com.example.payroll;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -22,8 +24,15 @@ class EmployeeController {
 	}
 	
 	@GetMapping("/employees")
-	List<Employee> all() {
-		return repository.findAll();
+	CollectionModel<EntityModel<Employee>> all() {
+		List<EntityModel<Employee>> employees =  repository.findAll().stream()
+				.map(employee -> EntityModel.of(employee,
+						linkTo(methodOn(EmployeeController.class).one(employee.getId())).withSelfRel(),
+						linkTo(methodOn(EmployeeController.class).all()).withRel("employees")))
+				.collect(Collectors.toList());
+		
+		return CollectionModel.of(employees,
+				linkTo(methodOn(EmployeeController.class).all()).withSelfRel());
 	}
 	
 	@PostMapping("/employees")
