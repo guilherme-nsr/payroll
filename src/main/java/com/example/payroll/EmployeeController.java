@@ -1,10 +1,14 @@
 package com.example.payroll;
 
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.ResponseEntity;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,9 +40,16 @@ class EmployeeController {
 	}
 	
 	@PostMapping("/employees")
-	EntityModel<Employee> newEmployee(@RequestBody Employee employee) {
+	ResponseEntity<?> newEmployee(@RequestBody Employee employee) {
 		Employee savedEmployee = repository.save(employee);
-		return assembler.toModel(savedEmployee);
+		EntityModel<Employee> employeeEntity = assembler.toModel(savedEmployee);
+		
+		URI employeeLocation = employeeEntity.getRequiredLink(IanaLinkRelations.SELF).toUri();
+		System.out.println("URI: " + employeeLocation.toString());
+		
+		return ResponseEntity
+				.created(employeeLocation)
+				.body(employeeEntity);
 	}
 	
 	@GetMapping("/employees/{id}")
