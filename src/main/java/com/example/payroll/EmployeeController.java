@@ -36,8 +36,9 @@ class EmployeeController {
 	}
 	
 	@PostMapping("/employees")
-	Employee newEmployee(@RequestBody Employee employee) {
-		return repository.save(employee);
+	EntityModel<Employee> newEmployee(@RequestBody Employee employee) {
+		Employee savedEmployee = repository.save(employee);
+		return assembler.toModel(savedEmployee);
 	}
 	
 	@GetMapping("/employees/{id}")
